@@ -1,0 +1,51 @@
+#include <SoftwareSerial.h>
+
+SoftwareSerial bluetooth(2,3);
+//--------------------------------------
+
+int ph_pin = A0; //numero do pin conectado a Po
+int pinoR = 11;
+int pinoG = 10;
+int pinoB = 9;
+
+
+
+#define FIREBASE_HOST "sensordeph-default-rtdb.firebaseio.com"//endereço do firebase
+#define FIREBASE_AUTH"73Q4UamabEtQg0LS4TQfkmfEaoiw9EOgCsVyoIju"//chave firebase
+
+//#define WIFI_SSID "Redmi Note 8 Pro" // nome do wifi
+//#define WIFI_PASSWORD "00000000"//senha do wifi
+
+void setup() {
+  SoftwareSerial bluetooth (2,3);
+  Serial.begin(9600);
+  pinMode(pinoR, OUTPUT);
+  pinMode(pinoG, OUTPUT);
+  pinMode(pinoB, OUTPUT);
+  bluetooth.begin(9600);
+  
+  }
+
+void loop() {
+  
+  int measure = analogRead(ph_pin);
+  Serial.print("Measure: ");
+  Serial.print(measure);
+
+
+  double voltage = 5 / 1024.0 * measure; //conversão de digital para tensao
+  Serial.print("\tTensão:: ");
+  Serial.print(voltage, 3);
+
+  // PH_step = (voltage@PH7 - voltage@PH4) / (PH7 - PH4)
+  // PH_probe = PH7 - ((voltage@PH7 - voltage@probe) / PH_step)
+  float Po = 7 + ((2.5 - voltage) / 0.18);
+  Serial.print("\tPH: "); 
+  Serial.print(Po, 1);
+  Serial.println("");
+  bluetooth.print(Po);
+  delay(1000);
+  
+}
+
+    
